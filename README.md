@@ -160,13 +160,13 @@ base_url = "https://play.limitlesstcg.com"
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36'}
 ```
 
-Une fois ceci fait, il faut s'assurer que les libraire sont bien importer, si besoin, faire ceci :
+Une fois ceci fait, il faut s'assurer d'être en python 3.13 et que les libraire sont bien importer, si besoin, faire ceci :
 
 ```bash
-cd data_collection
 pip install beautifulsoup4
 pip install aiohttp
 pip install aiofile
 
+cd data_collection
 python3 main.py
 ```
