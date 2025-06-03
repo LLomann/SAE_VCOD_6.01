@@ -9,7 +9,7 @@ import re
 import glob
 from pathlib import Path
 
-proxy = "" # "http://193.52.32.156:3128" ou "http://ocytohe.univ-ubs.fr:3128"
+proxy = input("proxy à utiliser, par défaut vide : ") or "" # "http://193.52.32.156:3128" ou "http://ocytohe.univ-ubs.fr:3128"
 base_url = "https://play.limitlesstcg.com"
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36'}
 
