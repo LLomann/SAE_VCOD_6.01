@@ -202,9 +202,10 @@ us = input("Utilisateur à utiliser, par défaut 'postgres' : ") or "postgres"
 pa = input("Mot de passe à utiliser (laisser vide si aucun) : ") or ""
 ```
 il suffit de nouveau de modifier les valeur situer après les or qui sont les valeur par défaut.
+Le code peut mettre un moment a s'executer, cela dépend da la capcité du PC e de la base de données utiliser, postgre ou postgre portable.
 
 Pourquoi changer les valeur par défaut ? il n'est pas nécessaire de le faire, les valeur par defaut son surtout utile lorsque que l'on souhaite executer le code plusieur fois a la suite, mais si besoin, je préfere tout de même expliquer commen procéder.
+Une fois ceci fait, les données vont être insérer dans la base de données
 
-
-
+### La visualisation des données
 
