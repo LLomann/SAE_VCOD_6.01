@@ -10,13 +10,19 @@ cards_directory = os.path.join(os.path.dirname(__file__), cards_directory)
 tournament_directory = "../data_collection/tournament"
 tournament_directory = os.path.join(os.path.dirname(__file__), tournament_directory)
 
+ho = input("Hôte à utiliser, par défaut 'localhost' : ") or "localhost"
+po = input("Port à utiliser, par défaut '5432' : ") or "5432"
+db = input("Base de données à utiliser, par défaut 'postgres' : ") or "postgres"
+us = input("Utilisateur à utiliser, par défaut 'postgres' : ") or "postgres"
+pa = input("Mot de passe à utiliser (laisser vide si aucun) : ") or ""
+
 def get_connection():
-    return psycopg. connect(
-        host="localhost",
-        port="5432",
-        dbname="postgres",
-        user="postgres",
-        password=""
+    return psycopg.connect(
+        host=ho,
+        port=int(po),
+        dbname=db,
+        user=us,
+        password=pa
     )
 
 def execute_sql_script(path: str):
@@ -227,5 +233,24 @@ insert_wrk_tournaments()
 print("insert raw decklist data")
 insert_wrk_decklists()
 
+print("insert raw match data")
+insert_wrk_matches()
+
+print("insert raw boosters data")
+insert_wrk_boosters()
+
+print("insert raw cards data")
+insert_wrk_cards()
+
 print("construct card database")
 execute_sql_script("sql/01_dwh_cards.sql")
+
+print("modify decklist booster card database")
+execute_sql_script("sql/02_modif_decklist.sql")
+
+print("modify decklist winner database")
+execute_sql_script("sql/03_add_winner_decklist.sql")
+
+print("creating deck summary database")
+execute_sql_script("sql/04_created_deck_name.sql")
+
