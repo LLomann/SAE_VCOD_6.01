@@ -141,8 +141,22 @@ dans cette première partie on retrouve un script python qui permet d'aller recu
 
 pour executer le code, voici les étape nécessaire :
 
-avant tout, si un proxy est à configurer sur le réseaau utiliser, alors il est nécessaire de modifier le script au début de ce dernier, et d'indiquer le proxy (il est possiblle de ne pas indiquer de proxy)
-Début du script main.py du dossier data collection
+Il faut d'abord ajouter les librairies si elles ne sont pas déjà installer
+```bash
+pip install beautifulsoup4
+pip install aiohttp
+pip install aiofile
+```
+
+Puis, pour executer le premier script, executer ceci dans le terminal
+```bash
+cd data_collection
+python3 main.py
+```
+
+le code vas commencer a s'excuter en demandant un proxy si il y en a un a ajouter, si non, simplement taper sur entrer si aucun proxy n'est a configurer.
+Si vous souhaiter configurer le proxy par défaut, il faudra modifier le code main.py, pour ce faire : 
+
 ```py
 from bs4 import BeautifulSoup, Tag
 from dataclasses import dataclass, asdict
@@ -155,26 +169,9 @@ import re
 import glob
 from pathlib import Path
 
-proxy = "" # a modifier
-base_url = "https://play.limitlesstcg.com"
-headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36'}
+proxy = input("proxy à utiliser, par défaut vide : ") or "" # modifier les "" en ajoutant le proxy par défaut souhaitez
 ```
-Une fois fait, sauvgarder
-
-
-Une fois ceci fait, il faut s'assurer d'être en python 3.13 et que les libraire sont bien importer, si besoin, faire ceci :
-
-```bash
-pip install beautifulsoup4
-pip install aiohttp
-pip install aiofile
-```
-
-Puis, pour executer le premier script, executer ceci dans le terminal
-```bash
-cd data_collection
-python3 main.py
-```
+après les importation des libraire ce trouve la varible proxy, il suffit d'insert dans les double guillmet vide le proxy par défaut que l'on souhaite renseigner
 
 le script peut mettre une moment a s'éxécuter, il y a plus de 1 200 tournois a scrapper, et un tpurnois met entre 5 et 10 secondes a être intégrer.
 les données récupérer sont stocker dans différents dossier, respectivement booster, card et tournament. les fichiers présent dans les différents dossier sont stocker au format json.
@@ -188,4 +185,26 @@ le but de ces transformatin est d'abord de stocker les données dans une base de
 
 le base de données choisi est postgrer SQL portable. Il a été décider d'utiliser cette base car elle peut facilement être executer sur du matérielle externe comme un clé USB, et pour la réalisation de ce projet il s'gissais de la meilleur apostion a notre disposition.
 
-de ce fait, il vas être nécessaire de modifier le début de script de transformation afin de modifier les information de cconnection a la base de données
+de ce fait, il faut renseigner les bonnes information de connection pour que le script s'éxecute dans la bonne base de postgrerSQL.
+Comme pour le script de collecte de données, au lancement du script de transformation, il sera demander de renseigner les information de connection de la base souhaite. Voici les différentes information nécessaire a la connection sur la base : 
+- host (par défaut 'localhost')
+- port (par défaut '5432')
+- dbname (par défaut 'postgres')
+- user (par défaut 'postgres')
+- password ()
+
+Et comme pour le script présedant, il est égelement possible de modifier les information par défaut si souhaiter.
+```py
+ho = input("Hôte à utiliser, par défaut 'localhost' : ") or "localhost"
+po = input("Port à utiliser, par défaut '5432' : ") or "5433"
+db = input("Base de données à utiliser, par défaut 'postgres' : ") or "postgres"
+us = input("Utilisateur à utiliser, par défaut 'postgres' : ") or "postgres"
+pa = input("Mot de passe à utiliser (laisser vide si aucun) : ") or ""
+```
+il suffit de nouveau de modifier les valeur situer après les or qui sont les valeur par défaut.
+
+Pourquoi changer les valeur par défaut ? il n'est pas nécessaire de le faire, les valeur par defaut son surtout utile lorsque que l'on souhaite executer le code plusieur fois a la suite, mais si besoin, je préfere tout de même expliquer commen procéder.
+
+
+
+
