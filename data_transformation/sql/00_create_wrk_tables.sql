@@ -1,5 +1,10 @@
--- public.tournaments definition
+DROP TABLE IF EXISTS public.wrk_decklists;
+DROP TABLE IF EXISTS public.wrk_matches;
+DROP TABLE IF EXISTS public.wrk_cards;
+DROP TABLE IF EXISTS public.wrk_boosters;
 DROP TABLE IF EXISTS public.wrk_tournaments;
+
+-- public.tournaments definition
 CREATE TABLE public.wrk_tournaments (
   tournament_id VARCHAR PRIMARY KEY,
   tournament_name varchar NULL,
@@ -9,7 +14,6 @@ CREATE TABLE public.wrk_tournaments (
   tournament_nb_players int NULL
 );
 
-DROP TABLE IF EXISTS public.wrk_decklists;
 CREATE TABLE public.wrk_decklists (
   tournament_id varchar NULL,
   player_id varchar NULL,
@@ -27,7 +31,6 @@ FOREIGN KEY (tournament_id) REFERENCES public.wrk_tournaments(tournament_id);
 
 
 -- aucune cléé primaire car on peut avoir deux joueurs que se batte deux fois dans le même tournoi
-DROP TABLE IF EXISTS public.wrk_matches;
 CREATE TABLE public.wrk_matches (
   tournament_id varchar NULL,
   player_id_1 varchar NULL,
@@ -37,7 +40,6 @@ CREATE TABLE public.wrk_matches (
 );
 
 -- Table boosters
-DROP TABLE IF EXISTS public.wrk_boosters;
 CREATE TABLE public.wrk_boosters (
   booster_id VARCHAR PRIMARY KEY,
   booster_name VARCHAR NULL,
@@ -47,7 +49,6 @@ CREATE TABLE public.wrk_boosters (
 );
 
 -- Table cards
-DROP TABLE IF EXISTS public.wrk_cards;
 CREATE TABLE public.wrk_cards (
   booster_id VARCHAR NOT NULL,
   card_number VARCHAR NOT NULL,
