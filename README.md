@@ -5,33 +5,18 @@
 
 In this game, players build decks containing sets of cards, and battle each other online.
 
-## Goal
-
-You have been mandated by your client to perform a metagame analysis of this game. Your client wishes to know which cards have the highest winrate, which cards work well in the same deck, which cards to use against popular strategies, if any of those trends have evolved during since the launch of the game, and any other useful patterns you can extract from the data.
-
-## General advice
-
-You will build a complete data ingestion, transformation, and visualization pipeline. It is recommended that you use a machine where you are an administrator, as it will make installing the necessary tooling (development tools and their dependencies, such as Python, Talend, a database, etc) easier. Some ingestion processes will be quite long, so keeping pipelines running overnight may be necessary.
-
-The technologies mentioned in this document are proposed as an example, but feel free to use any other technologies or languages you are familiar with. Your code still must be understandable by the client, so refrain from using proprietary technologies or software protected by a paid licence. Be prepared to defend your technological choices.
-
-Your time is limited. Consider splitting your team when tasks can be parallelized. For example, one person can be in charge of raw data ingestion, another in charge of data transformation, another in charge of reporting and data visualization. Contract interfaces between those steps as soon as possible (ie the people in charge of data visualization and data transformation must agree on what the final datamart will look like as soon as possible)
-
 ## Data Collection
 
 The developers of the game do not publish publicly available data for you to consume. However, there are websites organizing tournaments, and publishing data (including decklists, and match results) about those tournaments online. One such organization is [Limitless TCG](https://play.limitlesstcg.com).
 
-Limitless TCG does provide an [API and documentation on how to use it,](https://docs.limitlesstcg.com/developer.html) however this API is locked behind a key that you can request. As the approval process is manual, it is unlikely that you will be able to use this method.
-
-As an alternative, you can use the website to download the data in html format and use an html parser to extract raw data.
-
 The list of completed Pokemon TCG Pocket tournaments on this website can be viewed at [this url](https://play.limitlesstcg.com/tournaments/completed?game=POCKET&format=STANDARD&platform=all&type=online&time=all).
 
-For each tournament, you can view [pairings](https://play.limitlesstcg.com/tournament/6823dbb84c6488b18ed5e5d2/pairings) (including match results), and when available, [player decklists](https://play.limitlesstcg.com/tournament/6823dbb84c6488b18ed5e5d2/player/wiloxomega/decklist). This data can be used for metagame analysis, for example computing winrates for each card
+d'autre données sont récupérer comme les différents [booster](https://pocket.limitlesstcg.com/cards).
+ainsi que les cartes qui compose les différents booster.
 
-A python script using BeautifulSoup as the html parser is provided. The output of this script is a json file for each tournament, containing decklists and pairings.
+A python script using BeautifulSoup as the html parser is provided. The output of this script is a json file for each tournament, containing decklists, pairings, booster and cards.
 
-A sample of 2 tournament files in included in the sample_output directory in this repository. You will need to run this script yourself to collect all available data on the website using this method, be aware that this is time consuming, and the extraction program will likely have to run overnight (you can also collaborate with other teams to each extract a different page, and share results afterwards). You can of course develop your own data extraction process using another ETL, or modify the provided one if you need additional data from the source.
+A sample of each data files (tournament, booster and card) in included in the directory in this repository. You will need to run this script yourself to collect all available data on the website using this method, be aware that this is time consuming, and the extraction program will likely have to run overnight.
 
 To run the provided script, use the following commands :
 ```bash
@@ -43,35 +28,58 @@ pip install aiofile
 python3 main.py
 ```
 
+The code will begin execution by asking whether a proxy needs to be configured.  
+If not, simply press Enter to skip this step.
+
+The retrieved data is stored in the same folders as the sample data — namely, in the `booster`, `card`, and `tournament` directories.
+
+Note: During the data collection process, each player in a tournament is assigned a unique identifier to ensure participant anonymity.
+
 ## Database
-You will need a relational database to store and transform your data. Postgres on docker is recommended, but you can use any database at your disposal (keeping in mind that your client will need to be able to reproduce your work)
 
-To run a Postgres database using docker, you can use the following command :
-```bash
-docker run --name postgres-pokemon -p 5432:5432 -e POSTGRES_PASSWORD='keepThis$ecret' -d postgres
-```
+The chosen database system is portable PostgreSQL.  
+It was selected because it can be easily executed from external hardware, such as a USB drive.  
+For the purposes of this project, it was the most suitable solution available.
 
-## Data transformation
-You will need to transform the collected data to make it usable for vizualisation. A simple python script that ingest tournament and decklist data is provided, but feel free to use any ETL you are familiar with for this task. (Talend / Talaxie or Pentaho are examples of tools you can use)
+Note: You can also use a standard PostgreSQL installation if your computer is properly configured with a local database.
+
+## Data Transformation
+
+The purpose of the transformation step is to store the collected data into the database and prepare it for visualization by applying necessary transformations.
+
+You will need to transform the collected data to make it usable for visualization.  
+A simple Python script that ingests tournament and decklist data is provided,  
+but feel free to use any ETL tool you are familiar with for this task.  
+(Talend, Talaxie, or Pentaho are examples of tools you can use)
 
 To run the provided script :
 ```bash
+cd .. # pour ce re placer dans le bon repertoir
 cd data_transformation
 pip install psycopg
 
-export POSTGRES_DB=postgres
-export POSTGRES_USER=postgres
-export POSTGRES_PASSWORD='keepThis$ecret'
-export POSTGRES_HOST=localhost
-export POSTGRES_PORT=5432
 python3 main.py
 ```
 
-Some things to keep in mind for data transformation :
- * The sample script provided stores the user id for each deck. This is a bad practice you must fix, the username should be anonymized: nowhere in your database should the user name be visible. Hashing the username, or replacing it with an id are both good solutions.
- * Keep the naming of tables and columns consistent.
- * The client must be able to run your code on his machine.
- * Add logs and error catching to your transformation code.
+If the provided library is not sufficient, you may also need to install additional dependencies.
+```bash
+pip install psycopg[binary]
+```
+
+Once the script is launched, several pieces of information must be entered in the terminal.  
+You will need to provide the correct database connection details to ensure the script runs against the correct PostgreSQL database.
+
+Here are the required connection parameters:
+- host (default: 'localhost')
+- port (default: '5432')
+- dbname (default: 'postgres')
+- user (default: 'postgres')
+- password (no default, must be provided)
+
+Depending on the chosen database (portable PostgreSQL or standard PostgreSQL), and the performance of your machine,  
+the script may take a while to complete. In some cases, execution may take up to an hour.
+
+
 
 ## Data visualisation
 Your final presentation to your client must feature graphs and tables that will showcase what you have learned from the data.
@@ -108,104 +116,4 @@ You will publish all your data collection, transformation, and visualisation cod
  * You code must be portable and runnable easily by the client (so no proprietary or paid software).
 
 You will also need to do a live presentation of your findings. this presentation will also need to be accessible to the client.
-
-
-## note utile au cours du projet 
-carte les plus puissante
-taux win le plus élever
-
-1- DATA COLLECTION sur les internet
-2- DATA TRANSFO = ETL
-3- DATA VIZ
-
-info strat (contre strategie)
-
-1291 tournois
-
-
-## Objectif du projet
-
-You have been mandated by your client to perform a metagame analysis of this game. Your client wishes to know which cards have the highest winrate, which cards work well in the same deck, which cards to use against popular strategies, if any of those trends have evolved during since the launch of the game, and any other useful patterns you can extract from the data.
-
-## composition du projet 
-
-ce projet est diviser en 3 grandes parties :
-- La collecte des données
-- L'instertion et la transformation des données dans la base
-- La réstitution graphique des données
-
-
-### La collecte des données
-
-dans cette première partie on retrouve un script python qui permet d'aller recupérer sur le site [Limitless TCG](https://play.limitlesstcg.com) des information comme les tournois, les joueur, les matches , les boosterss ainsi que desinformation sur le jeu de cartes pokémon.
-
-pour executer le code, voici les étape nécessaire :
-
-Il faut d'abord ajouter les librairies si elles ne sont pas déjà installer
-```bash
-pip install beautifulsoup4
-pip install aiohttp
-pip install aiofile
-```
-
-Puis, pour executer le premier script, executer ceci dans le terminal
-```bash
-cd data_collection
-python3 main.py
-```
-
-le code vas commencer a s'excuter en demandant un proxy si il y en a un a ajouter, si non, simplement taper sur entrer si aucun proxy n'est a configurer.
-Si vous souhaiter configurer le proxy par défaut, il faudra modifier le code main.py, pour ce faire : 
-
-```py
-from bs4 import BeautifulSoup, Tag
-from dataclasses import dataclass, asdict
-import aiohttp
-import aiofile
-import asyncio
-import os
-import json
-import re
-import glob
-from pathlib import Path
-
-proxy = input("proxy à utiliser, par défaut vide : ") or "" # modifier les "" en ajoutant le proxy par défaut souhaitez
-```
-après les importation des libraire ce trouve la varible proxy, il suffit d'insert dans les double guillmet vide le proxy par défaut que l'on souhaite renseigner
-
-le script peut mettre une moment a s'éxécuter, il y a plus de 1 200 tournois a scrapper, et un tpurnois met entre 5 et 10 secondes a être intégrer.
-les données récupérer sont stocker dans différents dossier, respectivement booster, card et tournament. les fichiers présent dans les différents dossier sont stocker au format json.
-
-Une fois toute les données récupérer, passons au script de transformation. 
-
-
-### La transformation des données
-
-le but de ces transformatin est d'abord de stocker les données dans une base de données et d'apporter des transformation au données avant de réaliser la data visualisation.
-
-le base de données choisi est postgrer SQL portable. Il a été décider d'utiliser cette base car elle peut facilement être executer sur du matérielle externe comme un clé USB, et pour la réalisation de ce projet il s'gissais de la meilleur apostion a notre disposition.
-
-de ce fait, il faut renseigner les bonnes information de connection pour que le script s'éxecute dans la bonne base de postgrerSQL.
-Comme pour le script de collecte de données, au lancement du script de transformation, il sera demander de renseigner les information de connection de la base souhaite. Voici les différentes information nécessaire a la connection sur la base : 
-- host (par défaut 'localhost')
-- port (par défaut '5432')
-- dbname (par défaut 'postgres')
-- user (par défaut 'postgres')
-- password ()
-
-Et comme pour le script présedant, il est égelement possible de modifier les information par défaut si souhaiter.
-```py
-ho = input("Hôte à utiliser, par défaut 'localhost' : ") or "localhost"
-po = input("Port à utiliser, par défaut '5432' : ") or "5433"
-db = input("Base de données à utiliser, par défaut 'postgres' : ") or "postgres"
-us = input("Utilisateur à utiliser, par défaut 'postgres' : ") or "postgres"
-pa = input("Mot de passe à utiliser (laisser vide si aucun) : ") or ""
-```
-il suffit de nouveau de modifier les valeur situer après les or qui sont les valeur par défaut.
-Le code peut mettre un moment a s'executer, cela dépend da la capcité du PC e de la base de données utiliser, postgre ou postgre portable.
-
-Pourquoi changer les valeur par défaut ? il n'est pas nécessaire de le faire, les valeur par defaut son surtout utile lorsque que l'on souhaite executer le code plusieur fois a la suite, mais si besoin, je préfere tout de même expliquer commen procéder.
-Une fois ceci fait, les données vont être insérer dans la base de données
-
-### La visualisation des données
 
