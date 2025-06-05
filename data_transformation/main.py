@@ -223,7 +223,6 @@ def insert_wrk_cards():
             )
         conn.commit()
 
-
 print("creating work tables")
 execute_sql_script("sql/00_create_wrk_tables.sql")
 
@@ -254,8 +253,8 @@ execute_sql_script("sql/03_add_winner_decklist.sql")
 print("creating deck summary database")
 execute_sql_script("sql/04_created_deck_name.sql")
 
-print("creating deck play win")
-execute_sql_script("sql/05_create_dwh_deck_play_win.sql")
+# print("creating deck play win")                               # résultats faux, la table n'est plus utilisée
+# execute_sql_script("sql/05_create_dwh_deck_play_win.sql")
 
 print("modify tournaments saison")
 execute_sql_script("sql/06_alter_wrk_tournaments.sql")
