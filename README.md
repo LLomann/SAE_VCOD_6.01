@@ -11,8 +11,7 @@ The developers of the game do not publish publicly available data for you to con
 
 The list of completed Pokemon TCG Pocket tournaments on this website can be viewed at [this url](https://play.limitlesstcg.com/tournaments/completed?game=POCKET&format=STANDARD&platform=all&type=online&time=all).
 
-d'autre données sont récupérer comme les différents [booster](https://pocket.limitlesstcg.com/cards).
-ainsi que les cartes qui compose les différents booster.
+Additional data is collected, including the different [booster](https://pocket.limitlesstcg.com/cards), as well as the cards contained in each booster.
 
 A python script using BeautifulSoup as the html parser is provided. The output of this script is a json file for each tournament, containing decklists, pairings, booster and cards.
 
@@ -81,39 +80,27 @@ the script may take a while to complete. In some cases, execution may take up to
 
 
 
-## Data visualisation
+## Data Analyse & Visualisation
+
 Your final presentation to your client must feature graphs and tables that will showcase what you have learned from the data.
 
-A sample webpage displaying the number of players by tournament date is included. You can reuse this template for your other graphics, or use any other reporting solution, keeping in mind that your client will need to be able to reproduce your work. If you have access to docker, [Metabase](https://www.metabase.com/docs/latest/installation-and-operation/running-metabase-on-docker) is a good choice for a simple "SQL to chart" software.
+The tool chosen to represent our data and analyses is Power BI. We also created a number of indicators directly within the tool.
 
-To run the provided sample web page :
-```bash
-cd data_transformation
-pip install psycopg
-pip install "fastapi[standard]"
+The last data refresh was performed on Tuesday, June 3, 2025.
 
-export POSTGRES_DB=postgres
-export POSTGRES_USER=postgres
-export POSTGRES_PASSWORD='keepThis$ecret'
-export POSTGRES_HOST=localhost
-export POSTGRES_PORT=5432
-fastapi dev main.py
-```
+The first page, "Overview", focuses on the boosters and the number of cards they contain. A tooltip indicates the most used Pokémon-type card in each booster. We can also see the 15 most frequently used decks in tournaments since the game's release. This page also includes two KPIs: the number of tournaments played up to the last data refresh, and the average number of players per tournament.
 
-You will need to familiarize yourself with the data to understand how to present it. One example is the notion of "seasons". All cards in this game were not released at the same time, but rather in "[Expensions](https://en.wikipedia.org/wiki/Pok%C3%A9mon_Trading_Card_Game_Pocket#Expansions)". As such it probably doesn't make sense to aggregate the winrate of a card without taking into account when it was released.
+The second page, "Cards by Season", highlights the most used cards each season. To do this, we created the [Use Rate] indicator, which represents the usage rate of a card.
+It is defined as:
+Use Rate = Number of decks containing the card / Total number of decks.
+We display a chart showing card usage rates by season. There are also two tables: one listing the 10 most used Trainer-type cards, and the other showing the 10 most used Pokémon cards. A season filter has been added for both tables.
 
-To inform your choice of charts to produce, you can read the 'Goal' paragraph of this document again, but the following suggestions are probably mandatory :
- * A graph showing the most used cards per season
- * A graph showing the cards with the highest winrate per season.
- * For each "interesting" card, a graph showing it's usage and winrate across time.
+The third page, "Decks by Season", focuses on the most used decks each season. We created the [Deck Use Rate] indicator, defined as:
+Deck Use Rate = Number of times the deck was used in tournaments / Total number of decks used.
+This indicator does not take into account the number of matches won, only the match outcomes.
+It is also important to understand how the deck name was generated. We chose to use the base evolution of each Pokémon included in the deck. This approach helps group similar decks under a single representative name.
 
-## Deliverables
-You will publish all your data collection, transformation, and visualisation code in a public git repository ([github](https://github.com/) or [gitlab](https://about.gitlab.com/) are popluar choices). Additional requirements :
- * Your repository should mirror the layout of this one, with each step separated.
- * You should provide a README.md file to explain how to run each step.
- * Commit messages should be clear and relevant.
- * DO NOT share secrets (for example API keys, or sensitive passwords) publicly.
- * You code must be portable and runnable easily by the client (so no proprietary or paid software).
+The fourth page focuses on deck win rates, based on the number of appearances and the season. It includes a table showing the number of appearances and win rate per deck, a chart displaying win rates of the most used decks by season, and a table listing the most common matchups between decks. For each matchup, we show the win rate of deck 1 against deck 2. This helps identify which decks are effective counters to others.
 
-You will also need to do a live presentation of your findings. this presentation will also need to be accessible to the client.
+
 
